@@ -17,4 +17,4 @@ if not(os.path.isdir(export_directory)):
     os.makedirs(export_directory)
 
 ncnn_face_model = YOLO(model_directory)
-results = ncnn_face_model.predict(source=img, project=export_directory, name="image_name.jpg")
+results = ncnn_face_model.predict(source=img, project=export_directory, save=True)
