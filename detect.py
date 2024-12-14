@@ -7,7 +7,7 @@ img = "./20241123_173039.jpg"
 model_name = "yolo11n"
 model_directory = "./" + model_name + "_ncnn_model"
 
-export_directory = "./" + model_name + "_ncnn_model"
+export_directory = "./image"
 
 if not(os.path.isdir(model_directory)):
     face_model = YOLO(model_name + ".pt")
