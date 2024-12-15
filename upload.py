@@ -5,7 +5,7 @@ current_datetime = datetime.now()
 formatted_date = current_datetime.strftime("%Y%m%d_%H%M%S")
 ip_addr = '192.168.0.214:3000'
 api = '/rmq/opencv'
-upload_url = 'https://' + ip_addr + api
+upload_url = 'http://' + ip_addr + api
 queue = 'upload_queue'
 
 def main():
@@ -21,8 +21,8 @@ def main():
         
         print(f" [x] Received {body}")
         #=============  API Upload  =============#
-        if 'person' in json_str['detectec_object']:
-            person_count = json_str['detectec_object']['person']
+        if 'person' in json_str['detected_object']:
+            person_count = json_str['detected_object']['person']
         else:
             person_count = 0
 

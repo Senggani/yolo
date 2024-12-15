@@ -55,7 +55,7 @@ while True:
   connection = pika.BlockingConnection(pika.ConnectionParameters('rmq2.pptik.id', 5672, '/pm_module', credentials))
   channel = connection.channel()
 
-  channel.queue_declare(queue)
+  channel.queue_declare(queue=queue)
   
   message = ('{"full_path": "'+fullPath+'", "location": "ST123", "detected_object": '+ detected_object +'}')
 
