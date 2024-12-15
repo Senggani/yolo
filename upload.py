@@ -4,6 +4,8 @@ from datetime import datetime
 current_datetime = datetime.now()
 formatted_date = current_datetime.strftime("%Y%m%d_%H%M%S")
 ip_addr = '192.168.0.214:3000'
+api = '/rmq/opencv'
+upload_url = 'https://' + ip_addr + api
 queue = 'upload_queue'
 
 def main():
@@ -11,7 +13,7 @@ def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters('rmq2.pptik.id', 5672, '/pm_module', credentials))
     channel = connection.channel()
 
-    channel.queue_declare(queue='opencv_retrieve')
+    channel.queue_declare(queue=queue)
 
     def callback(ch, method, properties, body):
         
@@ -19,12 +21,15 @@ def main():
         
         print(f" [x] Received {body}")
         #=============  API Upload  =============#
-        url = 'http://'+ip_addr+'/pm-module/api/v1/ftp/upload-image'
+        if 'person' in json_str['detectec_object']:
+            person_count = json_str['detectec_object']['person']
+        else:
+            person_count = 0
 
         with open(json_str['full_path'], 'rb') as image_file:
             files = {'file': (json_str['full_path'], image_file, 'image/jpeg')}
-            data = {'name': formatted_date, 'source': 'opencv', 'created_by': 'opencv', 'total_face': json_str['total_face'], 'total_body': json_str['total_body']}
-            response = requests.post(url, files=files, data=data)
+            data = {'source': 'opencv', 'location': json_str['location'], 'total_person': person_count}
+            response = requests.post(upload_url, files=files, data=data)
 
         if response.status_code == 200:
             print('File uploaded successfully!')

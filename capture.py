@@ -43,11 +43,11 @@ while True:
   print(results[0].boxes.cls)
   lists = set(results[0].boxes.cls.tolist())
 
-  unique_items = set(lists)
-# Count occurrences manually
-  count = {item: lists.count(item) for item in unique_items}
-
-  print(count)
+  counts = {item: (results[0].boxes.cls.tolist()).count(item) for item in lists}
+  print(counts)
+  
+  detected_object=str(counts).replace("0.0", '"person"').replace("63.0", '"laptop"').replace("66.0", '"keyboard"').replace("67.0", '"smartphone"')
+  
   #-------------     YOLO     -------------#
 
   #============= RMQ Produce  =============#
@@ -57,10 +57,10 @@ while True:
 
   channel.queue_declare(queue)
   
-  message = ('{"full_path": "'+fullPath+'", "total_face": '+str(len(face))+', "total_body": '+str(len(body))+'}')
+  message = ('{"full_path": "'+fullPath+'", "location": "ST123", "detected_object": '+ detected_object +'}')
 
   channel.basic_publish(exchange='',
-                        routing_key='opencv_status',
+                        routing_key=queue,
                         body=message)
   print(" [x] Sent: " + message)
 
