@@ -56,12 +56,16 @@ The result should be saved in the directory stated in the command line.
 
 ### Step 4: Other
 
-For this implementation, needed backend service that will be recieving image and an RMQ service as a queue holder before sending image via API to backend. Configure url for backend API and RMQ parameter in the code (for both capture.py and detect.py)
+For this implementation, needed backend service that will be recieving image and an RMQ service as a queue holder before sending image via API to backend. Configure url for backend API and RMQ parameter in the code (for both capture.py and detect.py). Make sure you are using the latest code
+```
+git clone https://github.com/Senggani/yolo
+git pull
+```
 
 ## II. Specific Implementation
 On this implementation, the image source are from image buffer captured from webcam. Raspi will be accessed using PuTTy
 
-### Step 1:
+### Step 1: Connect to Raspi using SSH
 Open PuTTy, made sure to connect to the same network as raspi. hostname is admin@pmmodule in port 22.
 Login to the raspi then start virtual enviroment.
 ```
