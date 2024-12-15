@@ -52,4 +52,27 @@ ncnn_model = YOLO("yolo11n_ncnn_model")
 results = ncnn_model("https://ultralytics.com/images/bus.jpg", save=True)
 ```
 
-The result should be as follow.
+The result should be saved in the directory stated in the command line.
+
+### Step 4: Other
+
+For this implementation, needed backend service that will be recieving image and an RMQ service as a queue holder before sending image via API to backend. Configure url for backend API and RMQ parameter in the code (for both capture.py and detect.py)
+
+## II. Specific Implementation
+On this implementation, the image source are from image buffer captured from webcam. Raspi will be accessed using PuTTy
+
+### Step 1:
+Open PuTTy, made sure to connect to the same network as raspi. hostname is admin@pmmodule in port 22.
+Login to the raspi then start virtual enviroment.
+```
+source virt/bin/activate
+cd ./yolo
+python3 capture.py
+python3 upload.py   # open python file in different putty session!
+```
+
+### Step 2: Run the backend
+```
+npm start
+```
+
