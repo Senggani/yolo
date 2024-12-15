@@ -1,15 +1,15 @@
 from datetime import datetime
 import cv2 as cv
-import time, pika
+import time
 from ultralytics import YOLO
 import os
 
-path = "./image/"
 # Inisiasi model untuk YOLO
 model_name = "yolo11n"
 model_directory = "./" + model_name + "_ncnn_model"
 
 export_directory = "./image"
+path =  "./image/"
 
 if not(os.path.isdir(model_directory)):
     face_model = YOLO(model_name + ".pt")
@@ -24,21 +24,30 @@ if not cap.isOpened():
 	exit()
 
 while True:
+  # Mengambil gambar
+  ret, image = cap.read()
+  if not ret:
+    print("error to capture image")
+    
   # Mendapatkan waktu saat ini sebagai penamaan file
   current_datetime = datetime.now()
   formatted_date = current_datetime.strftime("%Y%m%d_%H%M%S")
   fullPath = (path + formatted_date + ".jpg")
 
-  # Mengambil gambar
-  ret, image = cap.read()
-  if not ret:
-    print("error to capture image")
-
   #=============     YOLO     =============#
 #   image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
   
-    results = ncnn_face_model.predict(source=image, project=export_directory, name="image_name.jpg")
-    print(results.boxes.cls)
+  results = ncnn_face_model.predict(source=image, conf = 0.5, classes=[0, 63, 66, 67])
+  
+  results[0].save(filename=fullPath)
+  print(results[0].boxes.cls)
+  lists = set(results[0].boxes.cls.tolist())
+
+  unique_items = set(lists)
+# Count occurrences manually
+  count = {item: lists.count(item) for item in unique_items}
+
+  print(count)
 
   #-------------     YOLO     -------------#
 
@@ -47,7 +56,7 @@ while True:
 #   connection = pika.BlockingConnection(pika.ConnectionParameters('rmq2.pptik.id', 5672, '/pm_module', credentials))
 #   channel = connection.channel()
 
-#   channel.queue_declare(queue='opencv_status')
+#   channel.queue_declare(queue='opencv_status_gani')
   
 #   message = ('{"full_path": "'+fullPath+'", "total_face": '+str(len(face))+', "total_body": '+str(len(body))+'}')
 
