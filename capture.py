@@ -1,6 +1,6 @@
 from datetime import datetime
 import cv2 as cv
-import time
+import time, pika
 from ultralytics import YOLO
 import os
 
@@ -10,6 +10,8 @@ model_directory = "./" + model_name + "_ncnn_model"
 
 export_directory = "./image"
 path =  "./image/"
+
+queue = "status_queue"
 
 if not(os.path.isdir(model_directory)):
     face_model = YOLO(model_name + ".pt")
@@ -35,8 +37,6 @@ while True:
   fullPath = (path + formatted_date + ".jpg")
 
   #=============     YOLO     =============#
-#   image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-  
   results = ncnn_face_model.predict(source=image, conf = 0.5, classes=[0, 63, 66, 67])
   
   results[0].save(filename=fullPath)
@@ -48,24 +48,23 @@ while True:
   count = {item: lists.count(item) for item in unique_items}
 
   print(count)
-
   #-------------     YOLO     -------------#
 
   #============= RMQ Produce  =============#
-#   credentials = pika.PlainCredentials(username='pm_modue', password='hl6GjO5LlRuQT1n')
-#   connection = pika.BlockingConnection(pika.ConnectionParameters('rmq2.pptik.id', 5672, '/pm_module', credentials))
-#   channel = connection.channel()
+  credentials = pika.PlainCredentials(username='pm_modue', password='hl6GjO5LlRuQT1n')
+  connection = pika.BlockingConnection(pika.ConnectionParameters('rmq2.pptik.id', 5672, '/pm_module', credentials))
+  channel = connection.channel()
 
-#   channel.queue_declare(queue='opencv_status_gani')
+  channel.queue_declare(queue)
   
-#   message = ('{"full_path": "'+fullPath+'", "total_face": '+str(len(face))+', "total_body": '+str(len(body))+'}')
+  message = ('{"full_path": "'+fullPath+'", "total_face": '+str(len(face))+', "total_body": '+str(len(body))+'}')
 
-#   channel.basic_publish(exchange='',
-#                         routing_key='opencv_status',
-#                         body=message)
-#   print(" [x] Sent: " + message)
+  channel.basic_publish(exchange='',
+                        routing_key='opencv_status',
+                        body=message)
+  print(" [x] Sent: " + message)
 
-#   connection.close()
+  connection.close()
   #------------- RMQ Produce  -------------#
 
   # Delay untuk pengambilan gambar selanjutnya
